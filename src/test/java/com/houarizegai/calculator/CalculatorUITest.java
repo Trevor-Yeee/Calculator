@@ -4,20 +4,12 @@ import com.houarizegai.calculator.ui.CalculatorUI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import java.awt.GraphicsEnvironment;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class CalculatorUITest {
 
     private CalculatorUI calculatorUI;
-
-    @BeforeAll
-    static void configureHeadlessMode() {
-        if (GraphicsEnvironment.isHeadless()) {
-            System.setProperty("java.awt.headless", "true");
-        }
-    }
 
     @BeforeEach
     void setUp() {
