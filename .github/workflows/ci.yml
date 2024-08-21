@@ -20,15 +20,15 @@ jobs:
         distribution: 'adopt'
         java-version: '11'
 
-    - name: Install Xvfb
+    - name: Install Xvfb and other dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y xvfb
+        sudo apt-get install -y xvfb openjdk-11-jdk
 
     - name: Run Xvfb
       run: |
-        export DISPLAY=:99
         Xvfb :99 -screen 0 1024x768x24 &
+        export DISPLAY=:99
         sleep 5  # Give Xvfb a moment to start
 
     - name: Build with Maven
