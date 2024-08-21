@@ -21,18 +21,6 @@ pipeline {
                 powershell 'mvn test'
             }
         }
-        stage('Deploy') {
-            steps {
-                script {
-                    if (fileExists('target/Calculator-1.0-SNAPSHOT.jar')) {
-                        // Run the JAR without timeout
-                        powershell 'java -jar target/Calculator-1.0-SNAPSHOT.jar'
-                    } else {
-                        error "JAR file not found!"
-                    }
-                }
-            }
-        }
     }
 
     post {
