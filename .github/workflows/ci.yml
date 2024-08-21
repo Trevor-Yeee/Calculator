@@ -30,7 +30,7 @@ jobs:
         path: target/*.jar  # Updated to match the JAR files in the target directory
 
     - name: Run Unit Tests 
-      run: mvn test -X
+      run: mvn test
 
     - name: Upload Test Reports 
       uses: actions/upload-artifact@v3 
