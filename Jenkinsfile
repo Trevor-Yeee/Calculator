@@ -25,10 +25,8 @@ pipeline {
             steps {
                 script {
                     if (fileExists('target/Calculator-1.0-SNAPSHOT.jar')) {
-                        // Run with a timeout
-                        timeout(time: 30, unit: 'SECONDS') {
-                            powershell 'java -jar target/Calculator-1.0-SNAPSHOT.jar'
-                        }
+                        // Run the JAR without timeout
+                        powershell 'java -jar target/Calculator-1.0-SNAPSHOT.jar'
                     } else {
                         error "JAR file not found!"
                     }
