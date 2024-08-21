@@ -25,17 +25,6 @@ pipeline {
                 powershell 'mvn test'
             }
         }
-        stage('Install Xvfb') {
-            steps {
-                script {
-                    // Install Xvfb
-                    sh '''
-                        sudo apt-get update
-                        sudo apt-get install -y xvfb
-                    '''
-                }
-            }
-        }
         stage('Setup Xvfb') {
             steps {
                 script {
@@ -47,12 +36,25 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    if (fileExists('target/Calculator-1.0-SNAPSHOT.jar')) {
-                        // Run the GUI application in the headless environment
-                        sh 'java -jar target/Calculator-1.0-SNAPSHOT.jar'
-                    } else {
-                        error "JAR file not found!"
-                    }
+                    // Ensure Xvfb is running before deploying
+                    sh '''
+                        # Check if Xvfb is running
+                        if pgrep -x "Xvfb" > /dev/null
+                        then
+                            echo "Xvfb is running"
+                        else
+                            echo "Xvfb is not running, starting Xvfb..."
+                            Xvfb :99 -screen 0 1024x768x24 &
+                        fi
+
+                        # Deploy the JAR file
+                        if [ -f target/Calculator-1.0-SNAPSHOT.jar ]; then
+                            java -jar target/Calculator-1.0-SNAPSHOT.jar
+                        else
+                            echo "JAR file not found!"
+                            exit 1
+                        fi
+                    '''
                 }
             }
         }
