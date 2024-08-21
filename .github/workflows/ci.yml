@@ -30,7 +30,7 @@ jobs:
         path: build/libs/**
  
     - name: Run Unit Tests 
-      run: mvn test 
+      run: gradle test 
  
     - name: Upload Test Reports 
       uses: actions/upload-artifact@v3 
