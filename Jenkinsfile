@@ -28,13 +28,14 @@ pipeline {
                         // Run with a timeout
                         timeout(time: 30, unit: 'SECONDS') {
                             powershell 'java -jar target/Calculator-1.0-SNAPSHOT.jar'
-                            }
-                     } else {
+                        }
+                    } else {
                         error "JAR file not found!"
+                    }
+                }
             }
         }
     }
-}
 
     post {
         always {
