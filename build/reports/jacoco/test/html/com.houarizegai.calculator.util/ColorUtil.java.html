@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ColorUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Calculator</a> &gt; <a href="index.source.html" class="el_package">com.houarizegai.calculator.util</a> &gt; <span class="el_source">ColorUtil.java</span></div><h1>ColorUtil.java</h1><pre class="source lang-java linenums">package com.houarizegai.calculator.util;
+
+import java.awt.*;
+import java.util.Optional;
+
+public class ColorUtil {
+
+<span class="nc" id="L8">    private ColorUtil() {</span>
+<span class="nc" id="L9">        throw new AssertionError(&quot;Constructor is not allowed&quot;);</span>
+    }
+
+    public static Color hex2Color(String colorHex) {
+<span class="fc" id="L13">        return Optional.ofNullable(colorHex)</span>
+<span class="fc" id="L14">                .map(hex -&gt; new Color(</span>
+<span class="fc" id="L15">                        Integer.valueOf(colorHex.substring(0, 2), 16),</span>
+<span class="fc" id="L16">                        Integer.valueOf(colorHex.substring(2, 4), 16),</span>
+<span class="fc" id="L17">                        Integer.valueOf(colorHex.substring(4, 6), 16)))</span>
+<span class="fc" id="L18">                .orElse(null);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

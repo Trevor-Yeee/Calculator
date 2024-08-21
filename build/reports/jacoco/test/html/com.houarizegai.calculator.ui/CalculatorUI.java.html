@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CalculatorUI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Calculator</a> &gt; <a href="index.source.html" class="el_package">com.houarizegai.calculator.ui</a> &gt; <span class="el_source">CalculatorUI.java</span></div><h1>CalculatorUI.java</h1><pre class="source lang-java linenums">package com.houarizegai.calculator.ui;
+
+import com.houarizegai.calculator.theme.properties.Theme;
+import com.houarizegai.calculator.theme.ThemeLoader;
+
+import java.awt.Cursor;
+import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.awt.Color;
+import javax.swing.*;
+
+import static com.houarizegai.calculator.util.ColorUtil.hex2Color;
+
+public class CalculatorUI {
+
+    private static final String FONT_NAME = &quot;Comic Sans MS&quot;;
+    private static final String DOUBLE_OR_NUMBER_REGEX = &quot;([-]?\\d+[.]\\d*)|(\\d+)|(-\\d+)&quot;;
+    private static final String APPLICATION_TITLE = &quot;Calculator&quot;;
+    private static final int WINDOW_WIDTH = 410;
+    private static final int WINDOW_HEIGHT = 600;
+    private static final int BUTTON_WIDTH = 80;
+    private static final int BUTTON_HEIGHT = 70;
+    private static final int MARGIN_X = 20;
+    private static final int MARGIN_Y = 60;
+
+    private final JFrame window;
+    private JComboBox&lt;String&gt; comboCalculatorType;
+    private JComboBox&lt;String&gt; comboTheme;
+    private JTextField inputScreen;
+    private JButton btnC;
+    private JButton btnBack;
+    private JButton btnMod;
+    private JButton btnDiv;
+    private JButton btnMul;
+    private JButton btnSub;
+    private JButton btnAdd;
+    private JButton btn0;
+    private JButton btn1;
+    private JButton btn2;
+    private JButton btn3;
+    private JButton btn4;
+    private JButton btn5;
+    private JButton btn6;
+    private JButton btn7;
+    private JButton btn8;
+    private JButton btn9;
+    private JButton btnPoint;
+    private JButton btnEqual;
+    private JButton btnRoot;
+    private JButton btnPower;
+    private JButton btnLog;
+    private JButton btnPi;
+
+<span class="fc" id="L56">    private char selectedOperator = ' ';</span>
+<span class="fc" id="L57">    private boolean go = true; // For calculate with Opt != (=)</span>
+<span class="fc" id="L58">    private boolean addToDisplay = true; // Connect numbers in display</span>
+<span class="fc" id="L59">    private double typedValue = 0;</span>
+    private JButton btnSquare;
+    private final Map&lt;String, Theme&gt; themesMap;
+
+<span class="fc" id="L63">    public CalculatorUI() {</span>
+<span class="fc" id="L64">        themesMap = ThemeLoader.loadThemes();</span>
+
+<span class="fc" id="L66">        window = new JFrame(APPLICATION_TITLE);</span>
+<span class="fc" id="L67">        window.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);</span>
+<span class="fc" id="L68">        window.setLocationRelativeTo(null);</span>
+<span class="fc" id="L69">        int[] columns = { MARGIN_X, MARGIN_X + 90, MARGIN_X + 90 * 2, MARGIN_X + 90 * 3, MARGIN_X + 90 * 4,</span>
+                MARGIN_X + 90 * 5 };
+<span class="fc" id="L71">        int[] rows = { MARGIN_Y, MARGIN_Y + 100, MARGIN_Y + 100 + 80, MARGIN_Y + 100 + 80 * 2, MARGIN_Y + 100 + 80 * 3,</span>
+                MARGIN_Y + 100 + 80 * 4 };
+
+<span class="fc" id="L74">        initInputScreen(columns, rows);</span>
+<span class="fc" id="L75">        initButtons(columns, rows);</span>
+<span class="fc" id="L76">        initCalculatorTypeSelector();</span>
+
+<span class="fc" id="L78">        initThemeSelector();</span>
+
+<span class="fc" id="L80">        window.setLayout(null);</span>
+<span class="fc" id="L81">        window.setResizable(false);</span>
+<span class="fc" id="L82">        window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);</span>
+<span class="fc" id="L83">        window.setVisible(true);</span>
+<span class="fc" id="L84">    }</span>
+
+    public double calculate(double firstNumber, double secondNumber, char operator) {
+<span class="pc bpc" id="L87" title="1 of 7 branches missed.">        switch (operator) {</span>
+            case '+':
+<span class="fc" id="L89">                return firstNumber + secondNumber;</span>
+            case '-':
+<span class="fc" id="L91">                return firstNumber - secondNumber;</span>
+            case '*':
+<span class="fc" id="L93">                return firstNumber * secondNumber;</span>
+            case '/':
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">                if (secondNumber == 0) {</span>
+<span class="nc" id="L96">                    JOptionPane.showMessageDialog(window, &quot;Cannot divide by zero&quot;, &quot;Error&quot;, JOptionPane.ERROR_MESSAGE);</span>
+<span class="nc" id="L97">                    return firstNumber;</span>
+                } else {
+<span class="fc" id="L99">                    return firstNumber / secondNumber;</span>
+                }
+            case '%':
+<span class="fc" id="L102">                return firstNumber % secondNumber;</span>
+            case '^':
+<span class="fc" id="L104">                return Math.pow(firstNumber, secondNumber);</span>
+            default:
+<span class="nc" id="L106">                return secondNumber;</span>
+        }
+    }
+
+    private void initThemeSelector() {
+<span class="fc" id="L111">        comboTheme = createComboBox(themesMap.keySet().toArray(new String[0]), 230, 30, &quot;Theme&quot;);</span>
+<span class="fc" id="L112">        comboTheme.addItemListener(event -&gt; {</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (event.getStateChange() != ItemEvent.SELECTED)</span>
+<span class="nc" id="L114">                return;</span>
+
+<span class="nc" id="L116">            String selectedTheme = (String) event.getItem();</span>
+<span class="nc" id="L117">            applyTheme(themesMap.get(selectedTheme));</span>
+<span class="nc" id="L118">        });</span>
+
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">        if (themesMap.entrySet().iterator().hasNext()) {</span>
+<span class="fc" id="L121">            applyTheme(themesMap.entrySet().iterator().next().getValue());</span>
+        }
+<span class="fc" id="L123">    }</span>
+
+    private void initInputScreen(int[] columns, int[] rows) {
+<span class="fc" id="L126">        inputScreen = new JTextField(&quot;0&quot;);</span>
+<span class="fc" id="L127">        inputScreen.setBounds(columns[0], rows[0], 350, 70);</span>
+<span class="fc" id="L128">        inputScreen.setEditable(false);</span>
+<span class="fc" id="L129">        inputScreen.setBackground(Color.WHITE);</span>
+<span class="fc" id="L130">        inputScreen.setFont(new Font(FONT_NAME, Font.PLAIN, 33));</span>
+<span class="fc" id="L131">        window.add(inputScreen);</span>
+<span class="fc" id="L132">    }</span>
+
+    private void initCalculatorTypeSelector() {
+<span class="fc" id="L135">        comboCalculatorType = createComboBox(new String[] { &quot;Standard&quot;, &quot;Scientific&quot; }, 20, 30, &quot;Calculator type&quot;);</span>
+<span class="fc" id="L136">        comboCalculatorType.addItemListener(event -&gt; {</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">            if (event.getStateChange() != ItemEvent.SELECTED)</span>
+<span class="nc" id="L138">                return;</span>
+
+<span class="nc" id="L140">            String selectedItem = (String) event.getItem();</span>
+<span class="nc bnc" id="L141" title="All 3 branches missed.">            switch (selectedItem) {</span>
+                case &quot;Standard&quot;:
+<span class="nc" id="L143">                    window.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);</span>
+<span class="nc" id="L144">                    btnRoot.setVisible(false);</span>
+<span class="nc" id="L145">                    btnPower.setVisible(false);</span>
+<span class="nc" id="L146">                    btnLog.setVisible(false);</span>
+
+<span class="nc" id="L148">                    btnPi.setVisible(false);</span>
+
+<span class="nc" id="L150">                    btnSquare.setVisible(false);</span>
+
+<span class="nc" id="L152">                    break;</span>
+                case &quot;Scientific&quot;:
+<span class="nc" id="L154">                    window.setSize(WINDOW_WIDTH + 170, WINDOW_HEIGHT);</span>
+<span class="nc" id="L155">                    btnRoot.setVisible(true);</span>
+<span class="nc" id="L156">                    btnPower.setVisible(true);</span>
+<span class="nc" id="L157">                    btnLog.setVisible(true);</span>
+<span class="nc" id="L158">                    btnPi.setVisible(true);</span>
+<span class="nc" id="L159">                    btnSquare.setVisible(true);</span>
+
+                    break;
+            }
+<span class="nc" id="L163">        });</span>
+<span class="fc" id="L164">    }</span>
+
+    private void initButtons(int[] columns, int[] rows) {
+<span class="fc" id="L167">        btnSquare = createButton(&quot;x²&quot;, columns[4], rows[4]);</span>
+<span class="fc" id="L168">btnSquare.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">    if (Pattern.matches(DOUBLE_OR_NUMBER_REGEX, inputScreen.getText())) {</span>
+<span class="nc" id="L170">        double value = Double.parseDouble(inputScreen.getText());</span>
+<span class="nc" id="L171">        value = Math.pow(value, 2);</span>
+<span class="nc" id="L172">        inputScreen.setText(String.valueOf(value));</span>
+<span class="nc" id="L173">        selectedOperator = '²';</span>
+<span class="nc" id="L174">        go = false;</span>
+<span class="nc" id="L175">        addToDisplay = false;</span>
+    }
+<span class="nc" id="L177">});</span>
+<span class="fc" id="L178">window.add(btnSquare);</span>
+
+
+<span class="fc" id="L181">        btnC = createButton(&quot;C&quot;, columns[0], rows[1]);</span>
+<span class="fc" id="L182">        btnC.addActionListener(event -&gt; {</span>
+<span class="nc" id="L183">            inputScreen.setText(&quot;0&quot;);</span>
+<span class="nc" id="L184">            selectedOperator = ' ';</span>
+<span class="nc" id="L185">            typedValue = 0;</span>
+            
+<span class="nc" id="L187">        });</span>
+
+<span class="fc" id="L189">        btnPi = createButton(&quot;π&quot;, columns[5], rows[3]);</span>
+<span class="fc" id="L190">        btnPi.addActionListener(event -&gt; {</span>
+<span class="nc" id="L191">        inputScreen.setText(String.valueOf(Math.PI));</span>
+<span class="nc" id="L192">        go = false;</span>
+<span class="nc" id="L193">        addToDisplay = false;</span>
+<span class="nc" id="L194">        });</span>
+<span class="fc" id="L195">            window.add(btnPi);</span>
+
+<span class="fc" id="L197">        btnBack = createButton(&quot;&lt;-&quot;, columns[1], rows[1]);</span>
+<span class="fc" id="L198">        btnBack.addActionListener(event -&gt; {</span>
+<span class="nc" id="L199">            String str = inputScreen.getText();</span>
+<span class="nc" id="L200">            StringBuilder str2 = new StringBuilder();</span>
+<span class="nc bnc" id="L201" title="All 2 branches missed.">            for (int i = 0; i &lt; (str.length() - 1); i++) {</span>
+<span class="nc" id="L202">                str2.append(str.charAt(i));</span>
+            }
+<span class="nc bnc" id="L204" title="All 2 branches missed.">            if (str2.toString().equals(&quot;&quot;)) {</span>
+<span class="nc" id="L205">                inputScreen.setText(&quot;0&quot;);</span>
+            } else {
+<span class="nc" id="L207">                inputScreen.setText(str2.toString());</span>
+            }
+<span class="nc" id="L209">        });</span>
+
+<span class="fc" id="L211">        btnMod = createButton(&quot;%&quot;, columns[2], rows[1]);</span>
+<span class="fc" id="L212">        btnMod.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L213" title="All 4 branches missed.">            if (!Pattern.matches(DOUBLE_OR_NUMBER_REGEX, inputScreen.getText()) || !go)</span>
+<span class="nc" id="L214">                return;</span>
+
+<span class="nc" id="L216">            typedValue = calculate(typedValue, Double.parseDouble(inputScreen.getText()), selectedOperator);</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">            if (Pattern.matches(&quot;[-]?[\\d]+[.][0]*&quot;, String.valueOf(typedValue))) {</span>
+<span class="nc" id="L218">                inputScreen.setText(String.valueOf((int) typedValue));</span>
+            } else {
+<span class="nc" id="L220">                inputScreen.setText(String.valueOf(typedValue));</span>
+            }
+<span class="nc" id="L222">            selectedOperator = '%';</span>
+<span class="nc" id="L223">            go = false;</span>
+<span class="nc" id="L224">            addToDisplay = false;</span>
+<span class="nc" id="L225">        });</span>
+
+<span class="fc" id="L227">        btnDiv = createButton(&quot;/&quot;, columns[3], rows[1]);</span>
+<span class="fc" id="L228">        btnDiv.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">            if (!Pattern.matches(DOUBLE_OR_NUMBER_REGEX, inputScreen.getText()))</span>
+<span class="nc" id="L230">                return;</span>
+
+<span class="nc bnc" id="L232" title="All 2 branches missed.">            if (go) {</span>
+<span class="nc" id="L233">                typedValue = calculate(typedValue, Double.parseDouble(inputScreen.getText()), selectedOperator);</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">                if (Pattern.matches(&quot;[-]?[\\d]+[.][0]*&quot;, String.valueOf(typedValue))) {</span>
+<span class="nc" id="L235">                    inputScreen.setText(String.valueOf((int) typedValue));</span>
+                } else {
+<span class="nc" id="L237">                    inputScreen.setText(String.valueOf(typedValue));</span>
+                }
+<span class="nc" id="L239">                selectedOperator = '/';</span>
+<span class="nc" id="L240">                go = false;</span>
+<span class="nc" id="L241">                addToDisplay = false;</span>
+            } else {
+<span class="nc" id="L243">                selectedOperator = '/';</span>
+            }
+<span class="nc" id="L245">        });</span>
+
+<span class="fc" id="L247">        btn7 = createButton(&quot;7&quot;, columns[0], rows[2]);</span>
+<span class="fc" id="L248">        btn7.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">                if (Pattern.matches(&quot;[0]*&quot;, inputScreen.getText())) {</span>
+<span class="nc" id="L251">                    inputScreen.setText(&quot;7&quot;);</span>
+                } else {
+<span class="nc" id="L253">                    inputScreen.setText(inputScreen.getText() + &quot;7&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L256">                inputScreen.setText(&quot;7&quot;);</span>
+<span class="nc" id="L257">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L259">            go = true;</span>
+<span class="nc" id="L260">        });</span>
+
+<span class="fc" id="L262">        btn8 = createButton(&quot;8&quot;, columns[1], rows[2]);</span>
+<span class="fc" id="L263">        btn8.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">                if (Pattern.matches(&quot;[0]*&quot;, inputScreen.getText())) {</span>
+<span class="nc" id="L266">                    inputScreen.setText(&quot;8&quot;);</span>
+                } else {
+<span class="nc" id="L268">                    inputScreen.setText(inputScreen.getText() + &quot;8&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L271">                inputScreen.setText(&quot;8&quot;);</span>
+<span class="nc" id="L272">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L274">            go = true;</span>
+<span class="nc" id="L275">        });</span>
+
+<span class="fc" id="L277">        btn9 = createButton(&quot;9&quot;, columns[2], rows[2]);</span>
+<span class="fc" id="L278">        btn9.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">                if (Pattern.matches(&quot;[0]*&quot;, inputScreen.getText())) {</span>
+<span class="nc" id="L281">                    inputScreen.setText(&quot;9&quot;);</span>
+                } else {
+<span class="nc" id="L283">                    inputScreen.setText(inputScreen.getText() + &quot;9&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L286">                inputScreen.setText(&quot;9&quot;);</span>
+<span class="nc" id="L287">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L289">            go = true;</span>
+<span class="nc" id="L290">        });</span>
+
+<span class="fc" id="L292">        btnMul = createButton(&quot;*&quot;, columns[3], rows[2]);</span>
+<span class="fc" id="L293">        btnMul.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">            if (!Pattern.matches(DOUBLE_OR_NUMBER_REGEX, inputScreen.getText()))</span>
+<span class="nc" id="L295">                return;</span>
+
+<span class="nc bnc" id="L297" title="All 2 branches missed.">            if (go) {</span>
+<span class="nc" id="L298">                typedValue = calculate(typedValue, Double.parseDouble(inputScreen.getText()), selectedOperator);</span>
+<span class="nc bnc" id="L299" title="All 2 branches missed.">                if (Pattern.matches(&quot;[-]?[\\d]+[.][0]*&quot;, String.valueOf(typedValue))) {</span>
+<span class="nc" id="L300">                    inputScreen.setText(String.valueOf((int) typedValue));</span>
+                } else {
+<span class="nc" id="L302">                    inputScreen.setText(String.valueOf(typedValue));</span>
+                }
+<span class="nc" id="L304">                selectedOperator = '*';</span>
+<span class="nc" id="L305">                go = false;</span>
+<span class="nc" id="L306">                addToDisplay = false;</span>
+            } else {
+<span class="nc" id="L308">                selectedOperator = '*';</span>
+            }
+<span class="nc" id="L310">        });</span>
+
+<span class="fc" id="L312">        btn4 = createButton(&quot;4&quot;, columns[0], rows[3]);</span>
+<span class="fc" id="L313">        btn4.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L314" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">                if (Pattern.matches(&quot;[0]*&quot;, inputScreen.getText())) {</span>
+<span class="nc" id="L316">                    inputScreen.setText(&quot;4&quot;);</span>
+                } else {
+<span class="nc" id="L318">                    inputScreen.setText(inputScreen.getText() + &quot;4&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L321">                inputScreen.setText(&quot;4&quot;);</span>
+<span class="nc" id="L322">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L324">            go = true;</span>
+<span class="nc" id="L325">        });</span>
+
+<span class="fc" id="L327">        btn5 = createButton(&quot;5&quot;, columns[1], rows[3]);</span>
+<span class="fc" id="L328">        btn5.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L330" title="All 2 branches missed.">                if (Pattern.matches(&quot;[0]*&quot;, inputScreen.getText())) {</span>
+<span class="nc" id="L331">                    inputScreen.setText(&quot;5&quot;);</span>
+                } else {
+<span class="nc" id="L333">                    inputScreen.setText(inputScreen.getText() + &quot;5&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L336">                inputScreen.setText(&quot;5&quot;);</span>
+<span class="nc" id="L337">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L339">            go = true;</span>
+<span class="nc" id="L340">        });</span>
+
+<span class="fc" id="L342">        btn6 = createButton(&quot;6&quot;, columns[2], rows[3]);</span>
+<span class="fc" id="L343">        btn6.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L345" title="All 2 branches missed.">                if (Pattern.matches(&quot;[0]*&quot;, inputScreen.getText())) {</span>
+<span class="nc" id="L346">                    inputScreen.setText(&quot;6&quot;);</span>
+                } else {
+<span class="nc" id="L348">                    inputScreen.setText(inputScreen.getText() + &quot;6&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L351">                inputScreen.setText(&quot;6&quot;);</span>
+<span class="nc" id="L352">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L354">            go = true;</span>
+<span class="nc" id="L355">        });</span>
+
+<span class="fc" id="L357">        btnSub = createButton(&quot;-&quot;, columns[3], rows[3]);</span>
+<span class="fc" id="L358">        btnSub.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L359" title="All 2 branches missed.">            if (!Pattern.matches(DOUBLE_OR_NUMBER_REGEX, inputScreen.getText()))</span>
+<span class="nc" id="L360">                return;</span>
+
+<span class="nc bnc" id="L362" title="All 2 branches missed.">            if (go) {</span>
+<span class="nc" id="L363">                typedValue = calculate(typedValue, Double.parseDouble(inputScreen.getText()), selectedOperator);</span>
+<span class="nc bnc" id="L364" title="All 2 branches missed.">                if (Pattern.matches(&quot;[-]?[\\d]+[.][0]*&quot;, String.valueOf(typedValue))) {</span>
+<span class="nc" id="L365">                    inputScreen.setText(String.valueOf((int) typedValue));</span>
+                } else {
+<span class="nc" id="L367">                    inputScreen.setText(String.valueOf(typedValue));</span>
+                }
+
+<span class="nc" id="L370">                selectedOperator = '-';</span>
+<span class="nc" id="L371">                go = false;</span>
+<span class="nc" id="L372">                addToDisplay = false;</span>
+            } else {
+<span class="nc" id="L374">                selectedOperator = '-';</span>
+            }
+<span class="nc" id="L376">        });</span>
+
+<span class="fc" id="L378">        btn1 = createButton(&quot;1&quot;, columns[0], rows[4]);</span>
+<span class="fc" id="L379">        btn1.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L380" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L381" title="All 2 branches missed.">                if (Pattern.matches(&quot;[0]*&quot;, inputScreen.getText())) {</span>
+<span class="nc" id="L382">                    inputScreen.setText(&quot;1&quot;);</span>
+                } else {
+<span class="nc" id="L384">                    inputScreen.setText(inputScreen.getText() + &quot;1&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L387">                inputScreen.setText(&quot;1&quot;);</span>
+<span class="nc" id="L388">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L390">            go = true;</span>
+<span class="nc" id="L391">        });</span>
+
+<span class="fc" id="L393">        btn2 = createButton(&quot;2&quot;, columns[1], rows[4]);</span>
+<span class="fc" id="L394">        btn2.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L395" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L396" title="All 2 branches missed.">                if (Pattern.matches(&quot;[0]*&quot;, inputScreen.getText())) {</span>
+<span class="nc" id="L397">                    inputScreen.setText(&quot;2&quot;);</span>
+                } else {
+<span class="nc" id="L399">                    inputScreen.setText(inputScreen.getText() + &quot;2&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L402">                inputScreen.setText(&quot;2&quot;);</span>
+<span class="nc" id="L403">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L405">            go = true;</span>
+<span class="nc" id="L406">        });</span>
+
+<span class="fc" id="L408">        btn3 = createButton(&quot;3&quot;, columns[2], rows[4]);</span>
+<span class="fc" id="L409">        btn3.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">                if (Pattern.matches(&quot;[0]*&quot;, inputScreen.getText())) {</span>
+<span class="nc" id="L412">                    inputScreen.setText(&quot;3&quot;);</span>
+                } else {
+<span class="nc" id="L414">                    inputScreen.setText(inputScreen.getText() + &quot;3&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L417">                inputScreen.setText(&quot;3&quot;);</span>
+<span class="nc" id="L418">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L420">            go = true;</span>
+<span class="nc" id="L421">        });</span>
+
+<span class="fc" id="L423">        btnAdd = createButton(&quot;+&quot;, columns[3], rows[4]);</span>
+<span class="fc" id="L424">        btnAdd.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L425" title="All 2 branches missed.">            if (!Pattern.matches(DOUBLE_OR_NUMBER_REGEX, inputScreen.getText()))</span>
+<span class="nc" id="L426">                return;</span>
+
+<span class="nc bnc" id="L428" title="All 2 branches missed.">            if (go) {</span>
+<span class="nc" id="L429">                typedValue = calculate(typedValue, Double.parseDouble(inputScreen.getText()), selectedOperator);</span>
+<span class="nc bnc" id="L430" title="All 2 branches missed.">                if (Pattern.matches(&quot;[-]?[\\d]+[.][0]*&quot;, String.valueOf(typedValue))) {</span>
+<span class="nc" id="L431">                    inputScreen.setText(String.valueOf((int) typedValue));</span>
+                } else {
+<span class="nc" id="L433">                    inputScreen.setText(String.valueOf(typedValue));</span>
+                }
+<span class="nc" id="L435">                selectedOperator = '+';</span>
+<span class="nc" id="L436">                go = false;</span>
+<span class="nc" id="L437">                addToDisplay = false;</span>
+            } else {
+<span class="nc" id="L439">                selectedOperator = '+';</span>
+            }
+<span class="nc" id="L441">        });</span>
+
+<span class="fc" id="L443">        btnPoint = createButton(&quot;.&quot;, columns[0], rows[5]);</span>
+<span class="fc" id="L444">        btnPoint.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L445" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L446" title="All 2 branches missed.">                if (!inputScreen.getText().contains(&quot;.&quot;)) {</span>
+<span class="nc" id="L447">                    inputScreen.setText(inputScreen.getText() + &quot;.&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L450">                inputScreen.setText(&quot;0.&quot;);</span>
+<span class="nc" id="L451">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L453">            go = true;</span>
+<span class="nc" id="L454">        });</span>
+
+<span class="fc" id="L456">        btn0 = createButton(&quot;0&quot;, columns[1], rows[5]);</span>
+<span class="fc" id="L457">        btn0.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">            if (addToDisplay) {</span>
+<span class="nc bnc" id="L459" title="All 2 branches missed.">                if (Pattern.matches(&quot;[0]*&quot;, inputScreen.getText())) {</span>
+<span class="nc" id="L460">                    inputScreen.setText(&quot;0&quot;);</span>
+                } else {
+<span class="nc" id="L462">                    inputScreen.setText(inputScreen.getText() + &quot;0&quot;);</span>
+                }
+            } else {
+<span class="nc" id="L465">                inputScreen.setText(&quot;0&quot;);</span>
+<span class="nc" id="L466">                addToDisplay = true;</span>
+            }
+<span class="nc" id="L468">            go = true;</span>
+<span class="nc" id="L469">        });</span>
+
+<span class="fc" id="L471">        btnEqual = createButton(&quot;=&quot;, columns[2], rows[5]);</span>
+<span class="fc" id="L472">        btnEqual.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L473" title="All 2 branches missed.">            if (!Pattern.matches(DOUBLE_OR_NUMBER_REGEX, inputScreen.getText()))</span>
+<span class="nc" id="L474">                return;</span>
+
+<span class="nc bnc" id="L476" title="All 2 branches missed.">            if (go) {</span>
+<span class="nc" id="L477">                typedValue = calculate(typedValue, Double.parseDouble(inputScreen.getText()), selectedOperator);</span>
+<span class="nc bnc" id="L478" title="All 2 branches missed.">                if (Pattern.matches(&quot;[-]?[\\d]+[.][0]*&quot;, String.valueOf(typedValue))) {</span>
+<span class="nc" id="L479">                    inputScreen.setText(String.valueOf((int) typedValue));</span>
+                } else {
+<span class="nc" id="L481">                    inputScreen.setText(String.valueOf(typedValue));</span>
+                }
+<span class="nc" id="L483">                selectedOperator = '=';</span>
+<span class="nc" id="L484">                addToDisplay = false;</span>
+            }
+<span class="nc" id="L486">        });</span>
+<span class="fc" id="L487">        btnEqual.setSize(2 * BUTTON_WIDTH + 10, BUTTON_HEIGHT);</span>
+
+<span class="fc" id="L489">        btnRoot = createButton(&quot;√&quot;, columns[4], rows[1]);</span>
+<span class="fc" id="L490">        btnRoot.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">            if (!Pattern.matches(DOUBLE_OR_NUMBER_REGEX, inputScreen.getText()))</span>
+<span class="nc" id="L492">                return;</span>
+
+<span class="nc bnc" id="L494" title="All 2 branches missed.">            if (go) {</span>
+<span class="nc" id="L495">                typedValue = Math.sqrt(Double.parseDouble(inputScreen.getText()));</span>
+<span class="nc bnc" id="L496" title="All 2 branches missed.">                if (Pattern.matches(&quot;[-]?[\\d]+[.][0]*&quot;, String.valueOf(typedValue))) {</span>
+<span class="nc" id="L497">                    inputScreen.setText(String.valueOf((int) typedValue));</span>
+                } else {
+<span class="nc" id="L499">                    inputScreen.setText(String.valueOf(typedValue));</span>
+                }
+<span class="nc" id="L501">                selectedOperator = '√';</span>
+<span class="nc" id="L502">                addToDisplay = false;</span>
+            }
+<span class="nc" id="L504">        });</span>
+<span class="fc" id="L505">        btnRoot.setVisible(false);</span>
+
+<span class="fc" id="L507">        btnPower = createButton(&quot;pow&quot;, columns[4], rows[2]);</span>
+<span class="fc" id="L508">        btnPower.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L509" title="All 2 branches missed.">            if (!Pattern.matches(DOUBLE_OR_NUMBER_REGEX, inputScreen.getText()))</span>
+<span class="nc" id="L510">                return;</span>
+
+<span class="nc bnc" id="L512" title="All 2 branches missed.">            if (go) {</span>
+<span class="nc" id="L513">                typedValue = calculate(typedValue, Double.parseDouble(inputScreen.getText()), selectedOperator);</span>
+<span class="nc bnc" id="L514" title="All 2 branches missed.">                if (Pattern.matches(&quot;[-]?[\\d]+[.][0]*&quot;, String.valueOf(typedValue))) {</span>
+<span class="nc" id="L515">                    inputScreen.setText(String.valueOf((int) typedValue));</span>
+                } else {
+<span class="nc" id="L517">                    inputScreen.setText(String.valueOf(typedValue));</span>
+                }
+<span class="nc" id="L519">                selectedOperator = '^';</span>
+<span class="nc" id="L520">                go = false;</span>
+<span class="nc" id="L521">                addToDisplay = false;</span>
+            } else {
+<span class="nc" id="L523">                selectedOperator = '^';</span>
+            }
+<span class="nc" id="L525">        });</span>
+<span class="fc" id="L526">        btnPower.setFont(new Font(&quot;Comic Sans MS&quot;, Font.PLAIN, 24));</span>
+<span class="fc" id="L527">        btnPower.setVisible(false);</span>
+
+<span class="fc" id="L529">        btnLog = createButton(&quot;ln&quot;, columns[4], rows[3]);</span>
+<span class="fc" id="L530">        btnLog.addActionListener(event -&gt; {</span>
+<span class="nc bnc" id="L531" title="All 2 branches missed.">            if (!Pattern.matches(DOUBLE_OR_NUMBER_REGEX, inputScreen.getText()))</span>
+<span class="nc" id="L532">                return;</span>
+
+<span class="nc bnc" id="L534" title="All 2 branches missed.">            if (go) {</span>
+<span class="nc" id="L535">                typedValue = Math.log(Double.parseDouble(inputScreen.getText()));</span>
+<span class="nc bnc" id="L536" title="All 2 branches missed.">                if (Pattern.matches(&quot;[-]?[\\d]+[.][0]*&quot;, String.valueOf(typedValue))) {</span>
+<span class="nc" id="L537">                    inputScreen.setText(String.valueOf((int) typedValue));</span>
+                } else {
+<span class="nc" id="L539">                    inputScreen.setText(String.valueOf(typedValue));</span>
+                }
+<span class="nc" id="L541">                selectedOperator = 'l';</span>
+<span class="nc" id="L542">                addToDisplay = false;</span>
+            }
+<span class="nc" id="L544">        });</span>
+<span class="fc" id="L545">        btnLog.setVisible(false);</span>
+<span class="fc" id="L546">    }</span>
+
+    private JComboBox&lt;String&gt; createComboBox(String[] items, int x, int y, String toolTip) {
+<span class="fc" id="L549">        JComboBox&lt;String&gt; combo = new JComboBox&lt;&gt;(items);</span>
+<span class="fc" id="L550">        combo.setBounds(x, y, 140, 25);</span>
+<span class="fc" id="L551">        combo.setToolTipText(toolTip);</span>
+<span class="fc" id="L552">        combo.setCursor(new Cursor(Cursor.HAND_CURSOR));</span>
+<span class="fc" id="L553">        window.add(combo);</span>
+
+<span class="fc" id="L555">        return combo;</span>
+    }
+
+    private JButton createButton(String label, int x, int y) {
+<span class="fc" id="L559">        JButton btn = new JButton(label);</span>
+<span class="fc" id="L560">        btn.setBounds(x, y, BUTTON_WIDTH, BUTTON_HEIGHT);</span>
+<span class="fc" id="L561">        btn.setFont(new Font(&quot;Comic Sans MS&quot;, Font.PLAIN, 28));</span>
+<span class="fc" id="L562">        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));</span>
+<span class="fc" id="L563">        btn.setFocusable(false);</span>
+<span class="fc" id="L564">        window.add(btn);</span>
+
+<span class="fc" id="L566">        return btn;</span>
+    }
+
+    private void applyTheme(Theme theme) {
+<span class="fc" id="L570">        window.getContentPane().setBackground(hex2Color(theme.getApplicationBackground()));</span>
+
+<span class="fc" id="L572">        comboCalculatorType.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L573">        comboTheme.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L574">        inputScreen.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L575">        btn0.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L576">        btn1.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L577">        btn2.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L578">        btn3.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L579">        btn4.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L580">        btn5.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L581">        btn6.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L582">        btn7.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L583">        btn8.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L584">        btn9.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L585">        btnPoint.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L586">        btnC.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L587">        btnBack.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L588">        btnMod.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L589">        btnDiv.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L590">        btnMul.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L591">        btnSub.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L592">        btnAdd.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L593">        btnRoot.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L594">        btnLog.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L595">        btnPower.setForeground(hex2Color(theme.getTextColor()));</span>
+<span class="fc" id="L596">        btnEqual.setForeground(hex2Color(theme.getBtnEqualTextColor()));</span>
+
+<span class="fc" id="L598">        comboCalculatorType.setBackground(hex2Color(theme.getApplicationBackground()));</span>
+<span class="fc" id="L599">        comboTheme.setBackground(hex2Color(theme.getApplicationBackground()));</span>
+<span class="fc" id="L600">        inputScreen.setBackground(hex2Color(theme.getApplicationBackground()));</span>
+<span class="fc" id="L601">        btn0.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L602">        btn1.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L603">        btn2.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L604">        btn3.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L605">        btn4.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L606">        btn5.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L607">        btn6.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L608">        btn7.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L609">        btn8.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L610">        btn9.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L611">        btnPoint.setBackground(hex2Color(theme.getNumbersBackground()));</span>
+<span class="fc" id="L612">        btnC.setBackground(hex2Color(theme.getOperatorBackground()));</span>
+<span class="fc" id="L613">        btnBack.setBackground(hex2Color(theme.getOperatorBackground()));</span>
+<span class="fc" id="L614">        btnMod.setBackground(hex2Color(theme.getOperatorBackground()));</span>
+<span class="fc" id="L615">        btnDiv.setBackground(hex2Color(theme.getOperatorBackground()));</span>
+<span class="fc" id="L616">        btnMul.setBackground(hex2Color(theme.getOperatorBackground()));</span>
+<span class="fc" id="L617">        btnSub.setBackground(hex2Color(theme.getOperatorBackground()));</span>
+<span class="fc" id="L618">        btnAdd.setBackground(hex2Color(theme.getOperatorBackground()));</span>
+<span class="fc" id="L619">        btnRoot.setBackground(hex2Color(theme.getOperatorBackground()));</span>
+<span class="fc" id="L620">        btnLog.setBackground(hex2Color(theme.getOperatorBackground()));</span>
+<span class="fc" id="L621">        btnPower.setBackground(hex2Color(theme.getOperatorBackground()));</span>
+<span class="fc" id="L622">        btnEqual.setBackground(hex2Color(theme.getBtnEqualBackground()));</span>
+<span class="fc" id="L623">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
