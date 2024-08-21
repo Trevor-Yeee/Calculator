@@ -25,6 +25,17 @@ pipeline {
                 powershell 'mvn test'
             }
         }
+        stage('Install Xvfb') {
+            steps {
+                script {
+                    // Install Xvfb
+                    sh '''
+                        sudo apt-get update
+                        sudo apt-get install -y xvfb
+                    '''
+                }
+            }
+        }
         stage('Setup Xvfb') {
             steps {
                 script {
