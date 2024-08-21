@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     tools {
-        jdk 'JDK-21' // Make sure this matches the JDK name configured in Jenkins
+        jdk 'JDK-21'
     }
 
     stages {
@@ -13,7 +13,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                powershell 'mvn clean install'
+                powershell 'mvn package'
             }
         }
         stage('Test') {
@@ -25,14 +25,16 @@ pipeline {
             steps {
                 script {
                     if (fileExists('target/Calculator-1.0-SNAPSHOT.jar')) {
-                        powershell 'java -jar target/Calculator-1.0-SNAPSHOT.jar'
-                    } else {
+                        // Run with a timeout
+                        timeout(time: 30, unit: 'SECONDS') {
+                            powershell 'java -jar target/Calculator-1.0-SNAPSHOT.jar'
+                            }
+                     } else {
                         error "JAR file not found!"
-                    }
-                }
             }
         }
     }
+}
 
     post {
         always {
