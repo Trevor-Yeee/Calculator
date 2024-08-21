@@ -48,4 +48,4 @@ jobs:
         path: target/site/jacoco/**
 
     - name: Run Deployment 
-      run: java -jar target/Calculator-1.0-SNAPSHOT.jar
+      run: java -jar build/libs/calculator-app-1.0-SNAPSHOT.jar
