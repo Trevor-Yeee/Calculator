@@ -22,17 +22,18 @@ pipeline {
             }
         }
         stage('Deploy') {
-    steps {
-        script {
-            if (fileExists('target/Calculator-1.0-SNAPSHOT.jar')) {
-                // Run the JAR file
-                bat 'java -jar target/Calculator-1.0-SNAPSHOT.jar'
-            } else {
-                error "JAR file not found!"
+            steps {
+                script {
+                    if (fileExists('target/Calculator-1.0-SNAPSHOT.jar')) {
+                        // Run the JAR file in the background
+                        bat 'start /B java -jar target/Calculator-1.0-SNAPSHOT.jar'
+                        echo 'JAR file started in the background.'
+                    } else {
+                        error "JAR file not found!"
+                    }
+                }
             }
         }
-    }
-}
     }
 
     post {
