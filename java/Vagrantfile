@@ -1,0 +1,43 @@
+Vagrant.configure("2") do |config|
+  config.vm.box = "ubuntu/focal64"
+  
+  # Customize VM resources
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = "2048"
+    vb.cpus = 2
+  end
+
+  # Configure port forwarding for RDP
+  config.vm.network "forwarded_port", guest: 3389, host: 3389
+
+  # Provisioning script
+  config.vm.provision "shell", inline: <<-SHELL
+    # Update package list
+    sudo apt-get update
+
+    # Install the Ubuntu desktop environment
+    sudo apt-get install -y ubuntu-desktop
+
+    # Install Xrdp (Remote Desktop Protocol)
+    sudo apt-get install -y xrdp
+
+    # Enable and start Xrdp service
+    sudo systemctl enable xrdp
+    sudo systemctl start xrdp
+
+    # Set up firewall to allow RDP traffic
+    sudo ufw allow 3389/tcp
+
+    # Install Java (OpenJDK 11)
+    sudo apt-get install -y openjdk-11-jdk
+
+    # Create a directory for the application
+    mkdir -p /home/vagrant/calculator
+
+    # Copy the JAR file from the host to the VM
+    cp /vagrant/target/Calculator-1.0-SNAPSHOT.jar /home/vagrant/calculator/
+
+    # Set permissions
+    sudo chown vagrant:vagrant /home/vagrant/calculator/Calculator-1.0-SNAPSHOT.jar
+  SHELL
+end
