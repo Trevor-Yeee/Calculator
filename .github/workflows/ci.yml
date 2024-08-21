@@ -46,6 +46,3 @@ jobs:
       with: 
         name: code-coverage-report 
         path: target/site/jacoco/**
-
-    - name: Run Deployment 
-      run: java -jar build/libs/calculator-app-1.0-SNAPSHOT.jar
