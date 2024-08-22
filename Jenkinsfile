@@ -22,24 +22,25 @@ pipeline {
             }
         }
         stage('Deploy') {
-            steps {
-                script {
-                    if (fileExists('target/Calculator-1.0-SNAPSHOT.jar')) {
-                        // Run the JAR file in the background
-                        bat 'start "" java -jar target/Calculator-1.0-SNAPSHOT.jar'
-                        echo 'JAR file started in the background.'
+    steps {
+        script {
+            if (fileExists('target/Calculator-1.0-SNAPSHOT.jar')) {
+                // Run the JAR file in the background
+                bat 'start java -jar target/Calculator-1.0-SNAPSHOT.jar'
+                echo 'JAR file started in the background.'
+                
+                // Optionally, add a delay to ensure the JAR starts correctly
+                sleep(time: 30, unit: 'SECONDS')
 
-                        // Optionally, add a delay to ensure the JAR starts correctly
-                        sleep(time: 30, unit: 'SECONDS')
-
-                        // Do not stop the process; just complete the deployment
-                        echo 'Deployment started; the JAR is running in the background.'
-                    } else {
-                        error "JAR file not found!"
-                    }
-                }
+                // Optionally, stop the process if needed (e.g., if it's a long-running process)
+                bat 'taskkill /F /IM java.exe'
+            } else {
+                error "JAR file not found!"
             }
         }
+    }
+}
+
     }
 
     post {
