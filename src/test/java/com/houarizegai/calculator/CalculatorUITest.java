@@ -32,6 +32,7 @@ class CalculatorUITest {
         "5,3,^,125"
     })
     
+    
     void testCalculation(double firstNumber, double secondNumber, char operator, double expectedResult) {
         // Define the behavior of the mocked method
         when(calculatorUI.calculate(firstNumber, secondNumber, operator)).thenReturn(expectedResult);
